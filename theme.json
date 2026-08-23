@@ -22,17 +22,32 @@
 				{
 					"slug": "display",
 					"name": "Fraunces",
-					"fontFamily": "Fraunces, Georgia, serif"
+					"fontFamily": "Fraunces, Georgia, serif",
+					"fontFace": [
+						{ "fontFamily": "Fraunces", "fontWeight": "500", "fontStyle": "normal", "src": [ "file:./assets/fonts/fraunces-500.woff2" ] },
+						{ "fontFamily": "Fraunces", "fontWeight": "600", "fontStyle": "normal", "src": [ "file:./assets/fonts/fraunces-600.woff2" ] },
+						{ "fontFamily": "Fraunces", "fontWeight": "700", "fontStyle": "normal", "src": [ "file:./assets/fonts/fraunces-700.woff2" ] }
+					]
 				},
 				{
 					"slug": "body",
 					"name": "Inter",
-					"fontFamily": "Inter, \"Segoe UI\", sans-serif"
+					"fontFamily": "Inter, \"Segoe UI\", sans-serif",
+					"fontFace": [
+						{ "fontFamily": "Inter", "fontWeight": "400", "fontStyle": "normal", "src": [ "file:./assets/fonts/inter-400.woff2" ] },
+						{ "fontFamily": "Inter", "fontWeight": "500", "fontStyle": "normal", "src": [ "file:./assets/fonts/inter-500.woff2" ] },
+						{ "fontFamily": "Inter", "fontWeight": "600", "fontStyle": "normal", "src": [ "file:./assets/fonts/inter-600.woff2" ] }
+					]
 				},
 				{
 					"slug": "mono",
 					"name": "IBM Plex Mono",
-					"fontFamily": "\"IBM Plex Mono\", Consolas, monospace"
+					"fontFamily": "\"IBM Plex Mono\", Consolas, monospace",
+					"fontFace": [
+						{ "fontFamily": "IBM Plex Mono", "fontWeight": "400", "fontStyle": "normal", "src": [ "file:./assets/fonts/ibm-plex-mono-400.woff2" ] },
+						{ "fontFamily": "IBM Plex Mono", "fontWeight": "500", "fontStyle": "normal", "src": [ "file:./assets/fonts/ibm-plex-mono-500.woff2" ] },
+						{ "fontFamily": "IBM Plex Mono", "fontWeight": "600", "fontStyle": "normal", "src": [ "file:./assets/fonts/ibm-plex-mono-600.woff2" ] }
+					]
 				}
 			],
 			"customFontSize": true
