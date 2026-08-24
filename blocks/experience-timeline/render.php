@@ -5,6 +5,11 @@ defined( 'ABSPATH' ) || exit;
  * Render the Experience timeline markup, identical to the ported static
  * site's `.timeline` structure (assets/css/style.css:436-494).
  *
+ * The section wrapper, eyebrow, and heading are NOT part of this block --
+ * they live as regular editable core/paragraph and core/heading blocks in
+ * templates/front-page.html, alongside this block. This function renders
+ * only the CPT-driven <ol class="timeline"> itself.
+ *
  * @return string
  */
 if ( ! function_exists( 'tajwar_render_experience_timeline' ) ) {
@@ -23,34 +28,30 @@ if ( ! function_exists( 'tajwar_render_experience_timeline' ) ) {
 
 		ob_start();
 		?>
-		<section class="section" id="experience">
-			<p class="eyebrow mono">// experience</p>
-			<h2 class="section-title">Where I've worked</h2>
-			<ol class="timeline">
-				<?php while ( $query->have_posts() ) : $query->the_post();
-					$post_id    = get_the_ID();
-					$role       = get_post_meta( $post_id, '_experience_role', true );
-					$company    = get_post_meta( $post_id, '_experience_company', true );
-					$location   = get_post_meta( $post_id, '_experience_location', true );
-					$date_start = get_post_meta( $post_id, '_experience_date_start', true );
-					$date_end   = get_post_meta( $post_id, '_experience_date_end', true );
-					$is_current = (bool) get_post_meta( $post_id, '_experience_is_current', true );
-					$bullets    = tajwar_sanitize_experience_bullets( get_post_meta( $post_id, '_experience_bullets', true ) );
-					$date_label = $date_start . ' — ' . ( $is_current ? 'Present' : $date_end );
-					?>
-					<li class="timeline-item">
-						<span class="timeline-date mono"><?php echo esc_html( $date_label ); ?></span>
-						<h3 class="timeline-role"><?php echo esc_html( $role ); ?> <span class="timeline-co">· <?php echo esc_html( $company ); ?></span></h3>
-						<p class="timeline-loc"><?php echo esc_html( $location ); ?></p>
-						<ul>
-							<?php foreach ( $bullets as $bullet ) : ?>
-								<li><?php echo esc_html( $bullet ); ?></li>
-							<?php endforeach; ?>
-						</ul>
-					</li>
-				<?php endwhile; ?>
-			</ol>
-		</section>
+		<ol class="timeline">
+			<?php while ( $query->have_posts() ) : $query->the_post();
+				$post_id    = get_the_ID();
+				$role       = get_post_meta( $post_id, '_experience_role', true );
+				$company    = get_post_meta( $post_id, '_experience_company', true );
+				$location   = get_post_meta( $post_id, '_experience_location', true );
+				$date_start = get_post_meta( $post_id, '_experience_date_start', true );
+				$date_end   = get_post_meta( $post_id, '_experience_date_end', true );
+				$is_current = (bool) get_post_meta( $post_id, '_experience_is_current', true );
+				$bullets    = tajwar_sanitize_experience_bullets( get_post_meta( $post_id, '_experience_bullets', true ) );
+				$date_label = $date_start . ' — ' . ( $is_current ? 'Present' : $date_end );
+				?>
+				<li class="timeline-item">
+					<span class="timeline-date mono"><?php echo esc_html( $date_label ); ?></span>
+					<h3 class="timeline-role"><?php echo esc_html( $role ); ?> <span class="timeline-co">· <?php echo esc_html( $company ); ?></span></h3>
+					<p class="timeline-loc"><?php echo esc_html( $location ); ?></p>
+					<ul>
+						<?php foreach ( $bullets as $bullet ) : ?>
+							<li><?php echo esc_html( $bullet ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</li>
+			<?php endwhile; ?>
+		</ol>
 		<?php
 		wp_reset_postdata();
 		return ob_get_clean();

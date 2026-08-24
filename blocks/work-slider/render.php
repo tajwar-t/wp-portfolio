@@ -8,6 +8,11 @@ defined( 'ABSPATH' ) || exit;
  * #sliderNext / #sliderDots by ID, so this render callback must emit those
  * same IDs once per page.
  *
+ * The section wrapper, eyebrow, heading, and intro paragraph are NOT part
+ * of this block -- they live as regular editable core/paragraph and
+ * core/heading blocks in templates/front-page.html, alongside this block.
+ * This function renders only the CPT-driven <div class="slider"> itself.
+ *
  * @return string
  */
 if ( ! function_exists( 'tajwar_render_work_slider' ) ) {
@@ -26,53 +31,47 @@ if ( ! function_exists( 'tajwar_render_work_slider' ) ) {
 
 		ob_start();
 		?>
-		<section class="section section-wide" id="work">
-			<p class="eyebrow mono">// work --live</p>
-			<h2 class="section-title">Websites I've built</h2>
-			<p class="work-intro">Live client sites spanning WordPress, Shopify and Magento&nbsp;2. Click any preview to visit the site.</p>
-
-			<div class="slider" id="workSlider" aria-roledescription="carousel" aria-label="Websites I've built">
-				<div class="slider-viewport">
-					<div class="slider-track" id="sliderTrack">
-						<?php while ( $query->have_posts() ) : $query->the_post();
-							$post_id         = get_the_ID();
-							$url             = get_post_meta( $post_id, '_work_site_url', true );
-							$platform        = get_post_meta( $post_id, '_work_site_platform', true );
-							$preview_blocked = (bool) get_post_meta( $post_id, '_work_site_preview_blocked', true );
-							$name            = get_the_title();
-							$initials        = tajwar_initials( $name );
-							?>
-							<div class="slide">
-								<div class="slide-bar">
-									<span class="slide-name"><?php echo esc_html( $name ); ?></span>
-									<span class="slide-badge mono"><?php echo esc_html( $platform ); ?></span>
-									<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer" class="slide-visit">Visit site ↗</a>
-								</div>
-								<div class="slide-frame">
-									<?php if ( $preview_blocked || ! has_post_thumbnail( $post_id ) ) : ?>
-										<div class="slide-fallback">
-											<span class="slide-fallback-mark mono"><?php echo esc_html( $initials ); ?></span>
-											<span class="slide-fallback-text">Live preview unavailable<br>(site blocks automated screenshots)</span>
-										</div>
-									<?php else : ?>
-										<?php echo get_the_post_thumbnail( $post_id, 'large', array(
-											'alt'     => sprintf( 'Screenshot of %s homepage', $name ),
-											'loading' => 'lazy',
-										) ); ?>
-									<?php endif; ?>
-									<a class="slide-overlay" href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( sprintf( 'Open %s in a new tab', $name ) ); ?>"></a>
-								</div>
+		<div class="slider" id="workSlider" aria-roledescription="carousel" aria-label="Websites I've built">
+			<div class="slider-viewport">
+				<div class="slider-track" id="sliderTrack">
+					<?php while ( $query->have_posts() ) : $query->the_post();
+						$post_id         = get_the_ID();
+						$url             = get_post_meta( $post_id, '_work_site_url', true );
+						$platform        = get_post_meta( $post_id, '_work_site_platform', true );
+						$preview_blocked = (bool) get_post_meta( $post_id, '_work_site_preview_blocked', true );
+						$name            = get_the_title();
+						$initials        = tajwar_initials( $name );
+						?>
+						<div class="slide">
+							<div class="slide-bar">
+								<span class="slide-name"><?php echo esc_html( $name ); ?></span>
+								<span class="slide-badge mono"><?php echo esc_html( $platform ); ?></span>
+								<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer" class="slide-visit">Visit site ↗</a>
 							</div>
-						<?php endwhile; wp_reset_postdata(); ?>
-					</div>
+							<div class="slide-frame">
+								<?php if ( $preview_blocked || ! has_post_thumbnail( $post_id ) ) : ?>
+									<div class="slide-fallback">
+										<span class="slide-fallback-mark mono"><?php echo esc_html( $initials ); ?></span>
+										<span class="slide-fallback-text">Live preview unavailable<br>(site blocks automated screenshots)</span>
+									</div>
+								<?php else : ?>
+									<?php echo get_the_post_thumbnail( $post_id, 'large', array(
+										'alt'     => sprintf( 'Screenshot of %s homepage', $name ),
+										'loading' => 'lazy',
+									) ); ?>
+								<?php endif; ?>
+								<a class="slide-overlay" href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( sprintf( 'Open %s in a new tab', $name ) ); ?>"></a>
+							</div>
+						</div>
+					<?php endwhile; wp_reset_postdata(); ?>
 				</div>
-
-				<button class="slider-arrow slider-prev" id="sliderPrev" aria-label="Previous website">‹</button>
-				<button class="slider-arrow slider-next" id="sliderNext" aria-label="Next website">›</button>
-
-				<div class="slider-dots" id="sliderDots"></div>
 			</div>
-		</section>
+
+			<button class="slider-arrow slider-prev" id="sliderPrev" aria-label="Previous website">‹</button>
+			<button class="slider-arrow slider-next" id="sliderNext" aria-label="Next website">›</button>
+
+			<div class="slider-dots" id="sliderDots"></div>
+		</div>
 		<?php
 		return ob_get_clean();
 	}
