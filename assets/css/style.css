@@ -416,6 +416,10 @@ main {
   background: var(--accent-wash);
   transform: translateY(-2px);
 }
+.btn-lg .wp-block-button__link {
+  padding: 15px 32px;
+  font-size: 0.95rem;
+}
 
 /* Generic section */
 .section {
