@@ -15,6 +15,7 @@ function tajwar_setup() {
 	add_theme_support( 'responsive-embeds' );
 	add_theme_support( 'html5', array( 'style', 'script', 'search-form', 'gallery', 'caption' ) );
 	add_theme_support( 'post-thumbnails', array( 'work_site' ) );
+	add_editor_style( 'assets/css/style.css' );
 }
 add_action( 'after_setup_theme', 'tajwar_setup' );
 
