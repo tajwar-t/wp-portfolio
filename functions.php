@@ -34,6 +34,6 @@ function tajwar_enqueue_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'tajwar_enqueue_assets' );
 
-require TAJWAR_THEME_DIR . '/inc/post-types.php';
-require TAJWAR_THEME_DIR . '/inc/meta-boxes.php';
-require TAJWAR_THEME_DIR . '/inc/blocks.php';
+require_once TAJWAR_THEME_DIR . '/inc/post-types.php';
+require_once TAJWAR_THEME_DIR . '/inc/meta-boxes.php';
+require_once TAJWAR_THEME_DIR . '/inc/blocks.php';
