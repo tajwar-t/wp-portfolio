@@ -57,6 +57,19 @@ class Test_Meta_Boxes2 extends WP_UnitTestCase {
 		unset( $_POST['tajwar_experience_nonce'], $_POST['tajwar_experience_role'] );
 	}
 
+	public function test_save_experience_meta_array_nonce_does_not_fatal() {
+		$post_id = $this->make_experience_post();
+
+		$_POST['tajwar_experience_nonce'] = array( 'x' );
+		$_POST['tajwar_experience_role']  = 'Should Not Save';
+
+		tajwar_save_experience_meta( $post_id );
+
+		$this->assertSame( '', get_post_meta( $post_id, '_experience_role', true ) );
+
+		unset( $_POST['tajwar_experience_nonce'], $_POST['tajwar_experience_role'] );
+	}
+
 	public function test_save_experience_meta_unchecking_is_current_stores_false() {
 		$post_id = $this->make_experience_post();
 		update_post_meta( $post_id, '_experience_is_current', true );
@@ -95,18 +108,15 @@ class Test_Meta_Boxes2 extends WP_UnitTestCase {
 		$rendered_field_names = $matches[1];
 
 		$this->assertContains( 'tajwar_project_tags', $rendered_field_names );
-		$this->assertContains( 'tajwar_project_url', $rendered_field_names );
 
 		$_POST['tajwar_project_nonce'] = wp_create_nonce( 'tajwar_save_project' );
 		$_POST['tajwar_project_tags']  = 'Laravel, Shopify API, PHP';
-		$_POST['tajwar_project_url']   = 'https://example.com/project';
 
 		tajwar_save_project_meta( $post_id );
 
 		$this->assertSame( 'Laravel, Shopify API, PHP', get_post_meta( $post_id, '_project_tags', true ) );
-		$this->assertSame( 'https://example.com/project', get_post_meta( $post_id, '_project_url', true ) );
 
-		unset( $_POST['tajwar_project_nonce'], $_POST['tajwar_project_tags'], $_POST['tajwar_project_url'] );
+		unset( $_POST['tajwar_project_nonce'], $_POST['tajwar_project_tags'] );
 	}
 
 	public function test_save_project_meta_requires_valid_nonce() {
@@ -122,17 +132,17 @@ class Test_Meta_Boxes2 extends WP_UnitTestCase {
 		unset( $_POST['tajwar_project_nonce'], $_POST['tajwar_project_tags'] );
 	}
 
-	public function test_save_project_meta_sanitizes_url() {
+	public function test_save_project_meta_array_nonce_does_not_fatal() {
 		$post_id = $this->make_project_post();
 
-		$_POST['tajwar_project_nonce'] = wp_create_nonce( 'tajwar_save_project' );
-		$_POST['tajwar_project_url']   = 'javascript:alert(1)';
+		$_POST['tajwar_project_nonce'] = array( 'x' );
+		$_POST['tajwar_project_tags']  = 'Should Not Save';
 
 		tajwar_save_project_meta( $post_id );
 
-		$this->assertSame( '', get_post_meta( $post_id, '_project_url', true ) );
+		$this->assertSame( '', get_post_meta( $post_id, '_project_tags', true ) );
 
-		unset( $_POST['tajwar_project_nonce'], $_POST['tajwar_project_url'] );
+		unset( $_POST['tajwar_project_nonce'], $_POST['tajwar_project_tags'] );
 	}
 
 	private function make_work_site_post() {
@@ -187,6 +197,19 @@ class Test_Meta_Boxes2 extends WP_UnitTestCase {
 		$post_id = $this->make_work_site_post();
 
 		$_POST['tajwar_work_site_nonce'] = 'invalid-nonce';
+		$_POST['tajwar_work_site_url']   = 'https://example.com/should-not-save';
+
+		tajwar_save_work_site_meta( $post_id );
+
+		$this->assertSame( '', get_post_meta( $post_id, '_work_site_url', true ) );
+
+		unset( $_POST['tajwar_work_site_nonce'], $_POST['tajwar_work_site_url'] );
+	}
+
+	public function test_save_work_site_meta_array_nonce_does_not_fatal() {
+		$post_id = $this->make_work_site_post();
+
+		$_POST['tajwar_work_site_nonce'] = array( 'x' );
 		$_POST['tajwar_work_site_url']   = 'https://example.com/should-not-save';
 
 		tajwar_save_work_site_meta( $post_id );

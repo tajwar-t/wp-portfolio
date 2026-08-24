@@ -79,11 +79,6 @@ function tajwar_register_post_types() {
 		'single'            => true,
 		'sanitize_callback' => 'sanitize_text_field',
 	) );
-	register_post_meta( 'project', '_project_url', array(
-		'type'              => 'string',
-		'single'            => true,
-		'sanitize_callback' => 'esc_url_raw',
-	) );
 
 	register_post_type( 'work_site', array(
 		'label'        => 'Work Sites',

@@ -60,7 +60,7 @@ function tajwar_render_experience_meta_box( $post ) {
 }
 
 function tajwar_save_experience_meta( $post_id ) {
-	if ( ! isset( $_POST['tajwar_experience_nonce'] ) || ! wp_verify_nonce( $_POST['tajwar_experience_nonce'], 'tajwar_save_experience' ) ) {
+	if ( ! isset( $_POST['tajwar_experience_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['tajwar_experience_nonce'] ?? '' ) ), 'tajwar_save_experience' ) ) {
 		return;
 	}
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
@@ -102,21 +102,16 @@ add_action( 'add_meta_boxes', 'tajwar_add_project_meta_box' );
 function tajwar_render_project_meta_box( $post ) {
 	wp_nonce_field( 'tajwar_save_project', 'tajwar_project_nonce' );
 	$tags = get_post_meta( $post->ID, '_project_tags', true );
-	$url  = get_post_meta( $post->ID, '_project_url', true );
 	?>
 	<p>
 		<label for="tajwar_project_tags"><strong>Tech tags</strong> (comma-separated)</label><br>
 		<input type="text" id="tajwar_project_tags" name="tajwar_project_tags" class="widefat" value="<?php echo esc_attr( $tags ); ?>" placeholder="Laravel, Shopify API, PHP">
 	</p>
-	<p>
-		<label for="tajwar_project_url"><strong>Project URL</strong> (optional)</label><br>
-		<input type="url" id="tajwar_project_url" name="tajwar_project_url" class="widefat" value="<?php echo esc_attr( $url ); ?>">
-	</p>
 	<?php
 }
 
 function tajwar_save_project_meta( $post_id ) {
-	if ( ! isset( $_POST['tajwar_project_nonce'] ) || ! wp_verify_nonce( $_POST['tajwar_project_nonce'], 'tajwar_save_project' ) ) {
+	if ( ! isset( $_POST['tajwar_project_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['tajwar_project_nonce'] ?? '' ) ), 'tajwar_save_project' ) ) {
 		return;
 	}
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
@@ -127,12 +122,9 @@ function tajwar_save_project_meta( $post_id ) {
 	}
 
 	// Field names below are 'tajwar' . $meta_key, matching the <input name="..."> attributes
-	// rendered in tajwar_render_project_meta_box() above (tajwar_project_tags, tajwar_project_url).
+	// rendered in tajwar_render_project_meta_box() above (tajwar_project_tags).
 	if ( isset( $_POST['tajwar_project_tags'] ) ) {
 		update_post_meta( $post_id, '_project_tags', sanitize_text_field( wp_unslash( $_POST['tajwar_project_tags'] ) ) );
-	}
-	if ( isset( $_POST['tajwar_project_url'] ) ) {
-		update_post_meta( $post_id, '_project_url', esc_url_raw( wp_unslash( $_POST['tajwar_project_url'] ) ) );
 	}
 }
 add_action( 'save_post_project', 'tajwar_save_project_meta' );
@@ -169,7 +161,7 @@ function tajwar_render_work_site_meta_box( $post ) {
 }
 
 function tajwar_save_work_site_meta( $post_id ) {
-	if ( ! isset( $_POST['tajwar_work_site_nonce'] ) || ! wp_verify_nonce( $_POST['tajwar_work_site_nonce'], 'tajwar_save_work_site' ) ) {
+	if ( ! isset( $_POST['tajwar_work_site_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['tajwar_work_site_nonce'] ?? '' ) ), 'tajwar_save_work_site' ) ) {
 		return;
 	}
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
