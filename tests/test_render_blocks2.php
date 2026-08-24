@@ -149,4 +149,35 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'slide-fallback', $html );
 		$this->assertStringContainsString( 'Live preview unavailable', $html );
 	}
+
+	public function test_stats_counter_renders_all_four_stats_starting_at_zero() {
+		$html = tajwar_render_stats_counter();
+
+		$this->assertStringContainsString( '<div class="hero-stats">', $html );
+		$this->assertStringContainsString( 'data-count-to="7"', $html );
+		$this->assertStringContainsString( 'data-count-to="150"', $html );
+		$this->assertStringContainsString( 'data-count-to="190"', $html );
+		$this->assertStringContainsString( 'data-count-to="30"', $html );
+		$this->assertStringContainsString( 'data-suffix="+"', $html );
+		// Every counter starts at 0 in the markup -- view.js animates it upward.
+		$this->assertSame( 4, substr_count( $html, '>0+</span>' ) );
+		$this->assertStringContainsString( 'Years Experience', $html );
+		$this->assertStringContainsString( '5★ Fiverr Reviews', $html );
+	}
+
+	public function test_stats_counter_render_php_survives_being_required_again_without_fatal() {
+		$render_file = dirname( __DIR__ ) . '/blocks/stats-counter/render.php';
+
+		ob_start();
+		require $render_file;
+		$direct_require_output = ob_get_clean();
+		$this->assertStringContainsString( 'hero-stats', $direct_require_output );
+
+		$blocks   = parse_blocks( '<!-- wp:tajwar/stats-counter /-->' );
+		$rendered = render_block( $blocks[0] );
+		$this->assertStringContainsString( 'hero-stats', $rendered );
+
+		$direct_call_output = tajwar_render_stats_counter();
+		$this->assertStringContainsString( 'hero-stats', $direct_call_output );
+	}
 }

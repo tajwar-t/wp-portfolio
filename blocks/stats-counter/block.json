@@ -1,0 +1,11 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tajwar/stats-counter",
+	"title": "Stats Counter",
+	"category": "widgets",
+	"description": "Renders the hero stats row; each number counts up from 0 when it scrolls into view.",
+	"textdomain": "tajwar-portfolio",
+	"render": "file:./render.php",
+	"viewScript": "file:./view.js"
+}
