@@ -1,0 +1,10 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tajwar/experience-timeline",
+	"title": "Experience Timeline",
+	"category": "widgets",
+	"description": "Renders published Experience entries as a timeline.",
+	"textdomain": "tajwar-portfolio",
+	"render": "file:./render.php"
+}
