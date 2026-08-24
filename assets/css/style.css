@@ -352,7 +352,6 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 13px 24px;
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 0.9rem;
@@ -411,7 +410,6 @@ main {
 }
 .btn-ghost .wp-block-button__link {
   background: transparent;
-  border-color: var(--accent);
   color: var(--accent);
 }
 .btn-ghost .wp-block-button__link:hover {
@@ -451,7 +449,9 @@ main {
   gap: 3px;
 }
 .fact-label {
+  margin: 0;
   color: var(--accent);
+  font-weight: 400;
   font-size: 0.78rem;
 }
 .fact-value {

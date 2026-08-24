@@ -180,4 +180,17 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 		$direct_call_output = tajwar_render_stats_counter();
 		$this->assertStringContainsString( 'hero-stats', $direct_call_output );
 	}
+
+	public function test_skill_group_and_skill_pill_blocks_are_registered() {
+		// tajwar_register_blocks() already ran once via the 'init' hook
+		// during bootstrap -- calling it again here would try to
+		// re-register every block and trip WP's duplicate-registration
+		// _doing_it_wrong() notice. Just check the registry state.
+		$registry = WP_Block_Type_Registry::get_instance();
+		$this->assertTrue( $registry->is_registered( 'tajwar/skill-group' ) );
+		$this->assertTrue( $registry->is_registered( 'tajwar/skill-pill' ) );
+
+		$pill = $registry->get_registered( 'tajwar/skill-pill' );
+		$this->assertSame( array( 'tajwar/skill-group' ), $pill->parent );
+	}
 }

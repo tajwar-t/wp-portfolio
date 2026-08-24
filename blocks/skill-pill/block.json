@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tajwar/skill-pill",
+	"title": "Skill Pill",
+	"category": "widgets",
+	"description": "A single pill-style skill tag inside a Skill Group block.",
+	"textdomain": "tajwar-portfolio",
+	"parent": [ "tajwar/skill-group" ],
+	"attributes": {
+		"text": {
+			"type": "string",
+			"source": "html",
+			"selector": "li",
+			"default": "Skill"
+		}
+	},
+	"supports": {
+		"html": false,
+		"reusable": false
+	},
+	"editorScript": "file:./index.js"
+}

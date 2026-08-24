@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tajwar/skill-group",
+	"title": "Skill Group",
+	"category": "widgets",
+	"description": "A skill category heading with a repeatable list of pill items.",
+	"textdomain": "tajwar-portfolio",
+	"attributes": {
+		"title": {
+			"type": "string",
+			"source": "html",
+			"selector": "h3",
+			"default": "Category"
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "file:./index.js"
+}
