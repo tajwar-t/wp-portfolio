@@ -13,10 +13,16 @@ defined( 'ABSPATH' ) || exit;
  * core/heading blocks in templates/front-page.html, alongside this block.
  * This function renders only the CPT-driven <div class="slider"> itself.
  *
+ * $attributes accepts perViewDesktop/perViewTablet/perViewMobile (set via
+ * the block's Inspector Controls) and is passed straight through as
+ * --slider-desktop/--slider-tablet/--slider-mobile custom properties,
+ * which style.css's .slider breakpoints read via var(..., <default>).
+ *
+ * @param array $attributes Block attributes, or empty array outside a real block render.
  * @return string
  */
 if ( ! function_exists( 'tajwar_render_work_slider' ) ) {
-	function tajwar_render_work_slider() {
+	function tajwar_render_work_slider( $attributes = array() ) {
 		$query = new WP_Query( array(
 			'post_type'      => 'work_site',
 			'post_status'    => 'publish',
@@ -29,9 +35,19 @@ if ( ! function_exists( 'tajwar_render_work_slider' ) ) {
 			return '';
 		}
 
+		$per_view_desktop = isset( $attributes['perViewDesktop'] ) ? max( 1, (int) $attributes['perViewDesktop'] ) : 3;
+		$per_view_tablet   = isset( $attributes['perViewTablet'] ) ? max( 1, (int) $attributes['perViewTablet'] ) : 2;
+		$per_view_mobile   = isset( $attributes['perViewMobile'] ) ? max( 1, (int) $attributes['perViewMobile'] ) : 1;
+		$slider_style      = sprintf(
+			'--slider-desktop: %1$d; --slider-tablet: %2$d; --slider-mobile: %3$d;',
+			$per_view_desktop,
+			$per_view_tablet,
+			$per_view_mobile
+		);
+
 		ob_start();
 		?>
-		<div class="slider" id="workSlider" aria-roledescription="carousel" aria-label="Websites I've built">
+		<div class="slider" id="workSlider" style="<?php echo esc_attr( $slider_style ); ?>" aria-roledescription="carousel" aria-label="Websites I've built">
 			<div class="slider-viewport">
 				<div class="slider-track" id="sliderTrack">
 					<?php while ( $query->have_posts() ) : $query->the_post();
@@ -96,4 +112,4 @@ if ( ! function_exists( 'tajwar_initials' ) ) {
 // whatever it echoes (see WP_Block_Type::render() / wp-includes/blocks.php,
 // register_block_type_from_metadata()) — it does not call the function above
 // automatically, so we must invoke it here for the block to actually render.
-echo tajwar_render_work_slider();
+echo tajwar_render_work_slider( $attributes ?? array() );

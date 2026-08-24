@@ -150,6 +150,38 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'Live preview unavailable', $html );
 	}
 
+	public function test_work_slider_uses_default_per_view_when_no_attributes_given() {
+		self::factory()->post->create( array( 'post_type' => 'work_site', 'post_status' => 'publish' ) );
+
+		$html = tajwar_render_work_slider();
+
+		$this->assertStringContainsString( '--slider-desktop: 3; --slider-tablet: 2; --slider-mobile: 1;', $html );
+	}
+
+	public function test_work_slider_applies_custom_per_view_attributes() {
+		self::factory()->post->create( array( 'post_type' => 'work_site', 'post_status' => 'publish' ) );
+
+		$html = tajwar_render_work_slider( array(
+			'perViewDesktop' => 5,
+			'perViewTablet'  => 3,
+			'perViewMobile'  => 2,
+		) );
+
+		$this->assertStringContainsString( '--slider-desktop: 5; --slider-tablet: 3; --slider-mobile: 2;', $html );
+	}
+
+	public function test_work_slider_clamps_per_view_attributes_below_one() {
+		self::factory()->post->create( array( 'post_type' => 'work_site', 'post_status' => 'publish' ) );
+
+		$html = tajwar_render_work_slider( array(
+			'perViewDesktop' => 0,
+			'perViewTablet'  => -2,
+			'perViewMobile'  => 1,
+		) );
+
+		$this->assertStringContainsString( '--slider-desktop: 1; --slider-tablet: 1; --slider-mobile: 1;', $html );
+	}
+
 	public function test_stats_counter_renders_all_four_stats_starting_at_zero() {
 		$html = tajwar_render_stats_counter();
 
@@ -208,6 +240,26 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'he is an expert in his work!', $html );
 		$this->assertStringContainsString( str_repeat( '★', 5 ), $html );
 		$this->assertStringNotContainsString( 'Unpublished reviewer', $html );
+	}
+
+	public function test_testimonial_slider_uses_default_per_view_when_no_attributes_given() {
+		self::factory()->post->create( array( 'post_type' => 'testimonial', 'post_status' => 'publish' ) );
+
+		$html = tajwar_render_testimonial_slider();
+
+		$this->assertStringContainsString( '--slider-desktop: 4; --slider-tablet: 3; --slider-mobile: 2;', $html );
+	}
+
+	public function test_testimonial_slider_applies_custom_per_view_attributes() {
+		self::factory()->post->create( array( 'post_type' => 'testimonial', 'post_status' => 'publish' ) );
+
+		$html = tajwar_render_testimonial_slider( array(
+			'perViewDesktop' => 6,
+			'perViewTablet'  => 4,
+			'perViewMobile'  => 1,
+		) );
+
+		$this->assertStringContainsString( '--slider-desktop: 6; --slider-tablet: 4; --slider-mobile: 1;', $html );
 	}
 
 	public function test_testimonial_slider_render_php_survives_being_required_again_without_fatal() {

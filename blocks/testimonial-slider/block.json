@@ -6,6 +6,11 @@
 	"category": "widgets",
 	"description": "Renders published Testimonial entries as a responsive 4/3/2-per-view carousel.",
 	"textdomain": "tajwar-portfolio",
+	"attributes": {
+		"perViewDesktop": { "type": "number", "default": 4 },
+		"perViewTablet": { "type": "number", "default": 3 },
+		"perViewMobile": { "type": "number", "default": 2 }
+	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js"
 }

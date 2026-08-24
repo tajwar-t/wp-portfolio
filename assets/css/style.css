@@ -634,16 +634,19 @@ main {
 .slider {
   position: relative;
   max-width: 100%;
-  --per-view: 3;
+  /* --slider-desktop/-tablet/-mobile are set inline by render.php from the
+     block's perViewDesktop/perViewTablet/perViewMobile attributes; the
+     var() fallbacks are this slider's defaults when unset. */
+  --per-view: var(--slider-desktop, 3);
 }
 @media (max-width: 900px) {
   .slider {
-    --per-view: 2;
+    --per-view: var(--slider-tablet, 2);
   }
 }
 @media (max-width: 640px) {
   .slider {
-    --per-view: 1;
+    --per-view: var(--slider-mobile, 1);
   }
 }
 .slider-viewport {
@@ -827,16 +830,16 @@ main {
    the Work slider above, with its own --per-view breakpoints: 4 desktop,
    3 tablet, 2 mobile. */
 .slider-testimonials {
-  --per-view: 4;
+  --per-view: var(--slider-desktop, 4);
 }
 @media (max-width: 1100px) {
   .slider-testimonials {
-    --per-view: 3;
+    --per-view: var(--slider-tablet, 3);
   }
 }
 @media (max-width: 640px) {
   .slider-testimonials {
-    --per-view: 2;
+    --per-view: var(--slider-mobile, 2);
   }
 }
 
