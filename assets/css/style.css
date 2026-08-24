@@ -96,6 +96,12 @@ button:focus-visible,
   border-right: 1px solid var(--line);
   background: var(--bg);
   z-index: 40;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .identity {
@@ -128,14 +134,14 @@ button:focus-visible,
   gap: 4px;
   margin-top: 48px;
 }
-.sidebar-nav a {
+.sidebar-nav a.wp-block-navigation-item__content {
   position: relative;
   display: flex;
   align-items: center;
   padding: 9px 10px 9px 0;
   font-family: var(--font-mono);
   font-size: 0.95rem;
-  color: var(--ink-dim);
+  color: var(--ink-dim) !important;
   transition:
     color 0.2s ease,
     padding-left 0.2s ease;
@@ -158,7 +164,7 @@ button:focus-visible,
 .sidebar-nav a:hover,
 .sidebar-nav a:focus-visible,
 .sidebar-nav a.active {
-  color: var(--ink);
+  color: var(--ink) !important;
 }
 .sidebar-nav a:hover::before,
 .sidebar-nav a:focus-visible::before,
