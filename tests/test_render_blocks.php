@@ -55,4 +55,44 @@ class Test_Render_Blocks extends WP_UnitTestCase {
 
 		$this->assertStringNotContainsString( 'Should Not Appear Inc', $html );
 	}
+
+	public function test_render_php_survives_being_required_again_without_fatal() {
+		$post_id = self::factory()->post->create( array(
+			'post_type'   => 'experience',
+			'post_title'  => 'Reload Co role',
+			'post_status' => 'publish',
+		) );
+		update_post_meta( $post_id, '_experience_role', 'Engineer' );
+		update_post_meta( $post_id, '_experience_company', 'Reload Co' );
+		update_post_meta( $post_id, '_experience_date_start', 'Jan 2020' );
+		update_post_meta( $post_id, '_experience_date_end', 'Feb 2020' );
+
+		// tests/bootstrap.php already loaded this file once via require_once.
+		// WP core's own render_callback for block.json's "render" field does a
+		// *plain* `require` (not require_once) every time the block renders
+		// (see register_block_type_from_metadata() in wp-includes/blocks.php),
+		// so a block appearing twice on one page -- or any second render pass
+		// in the same process -- re-requires this file. Without the
+		// function_exists() guard around the function declaration, this second
+		// require fatals with "Cannot redeclare tajwar_render_experience_timeline()".
+		$render_file = dirname( __DIR__ ) . '/blocks/experience-timeline/render.php';
+
+		ob_start();
+		require $render_file;
+		$direct_require_output = ob_get_clean();
+
+		$this->assertStringContainsString( 'Reload Co', $direct_require_output );
+
+		// Also drive it through the real WP block-rendering pipeline in the
+		// same process as the plain require above and a direct function call
+		// below -- three separate execution paths that each re-trigger the
+		// function declaration, none of which should fatal.
+		$blocks   = parse_blocks( '<!-- wp:tajwar/experience-timeline /-->' );
+		$rendered = render_block( $blocks[0] );
+
+		$this->assertStringContainsString( 'Reload Co', $rendered );
+
+		$direct_call_output = tajwar_render_experience_timeline();
+		$this->assertStringContainsString( 'Reload Co', $direct_call_output );
+	}
 }
