@@ -19,6 +19,7 @@ function _tajwar_manually_load_theme() {
 	require_once dirname( __DIR__ ) . '/blocks/projects-grid/render.php';
 	require_once dirname( __DIR__ ) . '/blocks/work-slider/render.php';
 	require_once dirname( __DIR__ ) . '/blocks/stats-counter/render.php';
+	require_once dirname( __DIR__ ) . '/blocks/testimonial-slider/render.php';
 }
 tests_add_filter( 'muplugins_loaded', '_tajwar_manually_load_theme' );
 

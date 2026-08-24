@@ -182,3 +182,60 @@ function tajwar_save_work_site_meta( $post_id ) {
 	update_post_meta( $post_id, '_work_site_preview_blocked', isset( $_POST['tajwar_work_site_preview_blocked'] ) );
 }
 add_action( 'save_post_work_site', 'tajwar_save_work_site_meta' );
+
+function tajwar_add_testimonial_meta_box() {
+	add_meta_box( 'tajwar_testimonial_details', 'Testimonial Details', 'tajwar_render_testimonial_meta_box', 'testimonial', 'side', 'default' );
+}
+add_action( 'add_meta_boxes', 'tajwar_add_testimonial_meta_box' );
+
+function tajwar_render_testimonial_meta_box( $post ) {
+	wp_nonce_field( 'tajwar_save_testimonial', 'tajwar_testimonial_nonce' );
+	$country = get_post_meta( $post->ID, '_testimonial_country', true );
+	$service = get_post_meta( $post->ID, '_testimonial_service', true );
+	$rating  = (int) get_post_meta( $post->ID, '_testimonial_rating', true );
+	$rating  = $rating >= 1 && $rating <= 5 ? $rating : 5;
+	?>
+	<p>Use the <strong>Title</strong> for the client's name and the main <strong>content editor</strong> for the review text.</p>
+	<p>
+		<label for="tajwar_testimonial_country"><strong>Client country</strong></label><br>
+		<input type="text" id="tajwar_testimonial_country" name="tajwar_testimonial_country" class="widefat" value="<?php echo esc_attr( $country ); ?>" placeholder="Netherlands">
+	</p>
+	<p>
+		<label for="tajwar_testimonial_service"><strong>Service / gig</strong></label><br>
+		<input type="text" id="tajwar_testimonial_service" name="tajwar_testimonial_service" class="widefat" value="<?php echo esc_attr( $service ); ?>" placeholder="Shopify">
+	</p>
+	<p>
+		<label for="tajwar_testimonial_rating"><strong>Rating</strong></label><br>
+		<select id="tajwar_testimonial_rating" name="tajwar_testimonial_rating" class="widefat">
+			<?php for ( $i = 5; $i >= 1; $i-- ) : ?>
+				<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $rating, $i ); ?>><?php echo esc_html( $i ); ?> star<?php echo $i === 1 ? '' : 's'; ?></option>
+			<?php endfor; ?>
+		</select>
+	</p>
+	<?php
+}
+
+function tajwar_save_testimonial_meta( $post_id ) {
+	if ( ! isset( $_POST['tajwar_testimonial_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['tajwar_testimonial_nonce'] ?? '' ) ), 'tajwar_save_testimonial' ) ) {
+		return;
+	}
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+
+	// Field names below are 'tajwar' . $meta_key, matching the <input>/<select> name attributes
+	// rendered in tajwar_render_testimonial_meta_box() above.
+	if ( isset( $_POST['tajwar_testimonial_country'] ) ) {
+		update_post_meta( $post_id, '_testimonial_country', sanitize_text_field( wp_unslash( $_POST['tajwar_testimonial_country'] ) ) );
+	}
+	if ( isset( $_POST['tajwar_testimonial_service'] ) ) {
+		update_post_meta( $post_id, '_testimonial_service', sanitize_text_field( wp_unslash( $_POST['tajwar_testimonial_service'] ) ) );
+	}
+	if ( isset( $_POST['tajwar_testimonial_rating'] ) ) {
+		update_post_meta( $post_id, '_testimonial_rating', tajwar_sanitize_testimonial_rating( wp_unslash( $_POST['tajwar_testimonial_rating'] ) ) );
+	}
+}
+add_action( 'save_post_testimonial', 'tajwar_save_testimonial_meta' );

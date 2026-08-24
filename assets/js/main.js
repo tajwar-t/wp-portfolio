@@ -100,14 +100,19 @@
     setTimeout(tick, 2200);
   }
 
-  /* ---- Work slider ---- */
-  var slider = document.getElementById("workSlider");
-  if (slider) {
-    var track = document.getElementById("sliderTrack");
+  /* ---- Sliders (Work + Testimonials) ----
+     Generic init over every .slider on the page (scoped by class, not id,
+     so multiple independent carousels can coexist). Each instance reads
+     its own --per-view custom property, so different sliders can define
+     different responsive breakpoints (see .slider-testimonials in
+     style.css) while sharing this same behaviour. */
+  Array.prototype.forEach.call(document.querySelectorAll(".slider"), function (slider) {
+    var track = slider.querySelector(".slider-track");
+    if (!track) return;
     var slides = Array.prototype.slice.call(track.children);
-    var prevBtn = document.getElementById("sliderPrev");
-    var nextBtn = document.getElementById("sliderNext");
-    var dotsWrap = document.getElementById("sliderDots");
+    var prevBtn = slider.querySelector(".slider-prev");
+    var nextBtn = slider.querySelector(".slider-next");
+    var dotsWrap = slider.querySelector(".slider-dots");
     var current = 0;
     var perView = 1;
     var pageCount = 1;
@@ -155,8 +160,8 @@
       render();
     }
 
-    prevBtn.addEventListener("click", function () { goTo(current - 1); });
-    nextBtn.addEventListener("click", function () { goTo(current + 1); });
+    if (prevBtn) prevBtn.addEventListener("click", function () { goTo(current - 1); });
+    if (nextBtn) nextBtn.addEventListener("click", function () { goTo(current + 1); });
 
     slider.setAttribute("tabindex", "0");
     slider.addEventListener("keydown", function (e) {
@@ -175,5 +180,5 @@
 
     window.addEventListener("resize", refreshLayout);
     refreshLayout();
-  }
+  });
 })();

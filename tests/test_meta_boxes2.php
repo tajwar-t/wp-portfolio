@@ -245,4 +245,78 @@ class Test_Meta_Boxes2 extends WP_UnitTestCase {
 
 		unset( $_POST['tajwar_work_site_nonce'] );
 	}
+
+	private function make_testimonial_post() {
+		tajwar_register_post_types();
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		return self::factory()->post->create( array( 'post_type' => 'testimonial' ) );
+	}
+
+	/**
+	 * Real round-trip test: renders the actual meta box markup, extracts the
+	 * <input>/<select> name attributes from it via DOM parsing, POSTs under
+	 * those exact field names, and asserts the save handler persisted the
+	 * values.
+	 */
+	public function test_save_testimonial_meta_persists_all_fields_matching_rendered_field_names() {
+		$post_id = $this->make_testimonial_post();
+		$post    = get_post( $post_id );
+
+		ob_start();
+		tajwar_render_testimonial_meta_box( $post );
+		$html = ob_get_clean();
+
+		preg_match_all( '/<input[^>]*\bname="([^"]+)"/', $html, $input_matches );
+		$rendered_field_names = $input_matches[1];
+		preg_match_all( '/<select[^>]*\bname="([^"]+)"/', $html, $select_matches );
+		$rendered_field_names = array_merge( $rendered_field_names, $select_matches[1] );
+
+		$this->assertContains( 'tajwar_testimonial_country', $rendered_field_names );
+		$this->assertContains( 'tajwar_testimonial_service', $rendered_field_names );
+		$this->assertContains( 'tajwar_testimonial_rating', $rendered_field_names );
+
+		$_POST['tajwar_testimonial_nonce']   = wp_create_nonce( 'tajwar_save_testimonial' );
+		$_POST['tajwar_testimonial_country'] = 'Netherlands';
+		$_POST['tajwar_testimonial_service'] = 'Shopify';
+		$_POST['tajwar_testimonial_rating']  = '4';
+
+		tajwar_save_testimonial_meta( $post_id );
+
+		$this->assertSame( 'Netherlands', get_post_meta( $post_id, '_testimonial_country', true ) );
+		$this->assertSame( 'Shopify', get_post_meta( $post_id, '_testimonial_service', true ) );
+		$this->assertSame( 4, (int) get_post_meta( $post_id, '_testimonial_rating', true ) );
+
+		unset(
+			$_POST['tajwar_testimonial_nonce'],
+			$_POST['tajwar_testimonial_country'],
+			$_POST['tajwar_testimonial_service'],
+			$_POST['tajwar_testimonial_rating']
+		);
+	}
+
+	public function test_save_testimonial_meta_requires_valid_nonce() {
+		$post_id = $this->make_testimonial_post();
+
+		$_POST['tajwar_testimonial_nonce']   = 'invalid-nonce';
+		$_POST['tajwar_testimonial_country'] = 'Should Not Save';
+
+		tajwar_save_testimonial_meta( $post_id );
+
+		$this->assertSame( '', get_post_meta( $post_id, '_testimonial_country', true ) );
+
+		unset( $_POST['tajwar_testimonial_nonce'], $_POST['tajwar_testimonial_country'] );
+	}
+
+	public function test_save_testimonial_meta_rating_out_of_range_is_clamped() {
+		$post_id = $this->make_testimonial_post();
+
+		$_POST['tajwar_testimonial_nonce']  = wp_create_nonce( 'tajwar_save_testimonial' );
+		$_POST['tajwar_testimonial_rating'] = '99';
+
+		tajwar_save_testimonial_meta( $post_id );
+
+		$this->assertSame( 5, (int) get_post_meta( $post_id, '_testimonial_rating', true ) );
+
+		unset( $_POST['tajwar_testimonial_nonce'], $_POST['tajwar_testimonial_rating'] );
+	}
 }

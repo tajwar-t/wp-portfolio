@@ -25,4 +25,17 @@ class Test_Post_Types extends WP_UnitTestCase {
 		$this->assertTrue( post_type_exists( 'work_site' ) );
 		$this->assertTrue( post_type_supports( 'work_site', 'thumbnail' ) );
 	}
+
+	public function test_testimonial_post_type_is_registered() {
+		tajwar_register_post_types();
+		$this->assertTrue( post_type_exists( 'testimonial' ) );
+		$this->assertTrue( post_type_supports( 'testimonial', 'editor' ) );
+	}
+
+	public function test_testimonial_rating_is_clamped_to_1_5() {
+		$this->assertSame( 5, tajwar_sanitize_testimonial_rating( 9 ) );
+		$this->assertSame( 5, tajwar_sanitize_testimonial_rating( 0 ) );
+		$this->assertSame( 5, tajwar_sanitize_testimonial_rating( '' ) );
+		$this->assertSame( 3, tajwar_sanitize_testimonial_rating( '3' ) );
+	}
 }

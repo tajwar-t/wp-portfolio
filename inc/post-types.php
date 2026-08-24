@@ -110,8 +110,52 @@ function tajwar_register_post_types() {
 		'single'            => true,
 		'sanitize_callback' => 'rest_sanitize_boolean',
 	) );
+
+	register_post_type( 'testimonial', array(
+		'label'        => 'Testimonials',
+		'labels'       => array(
+			'name'          => 'Testimonials',
+			'singular_name' => 'Testimonial',
+			'add_new_item'  => 'Add Testimonial',
+		),
+		'public'       => false,
+		'show_ui'      => true,
+		'show_in_menu' => true,
+		'menu_icon'    => 'dashicons-star-filled',
+		'supports'     => array( 'title', 'editor' ),
+		'show_in_rest' => false,
+	) );
+
+	register_post_meta( 'testimonial', '_testimonial_country', array(
+		'type'              => 'string',
+		'single'            => true,
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	register_post_meta( 'testimonial', '_testimonial_service', array(
+		'type'              => 'string',
+		'single'            => true,
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	register_post_meta( 'testimonial', '_testimonial_rating', array(
+		'type'              => 'integer',
+		'single'            => true,
+		'default'           => 5,
+		'sanitize_callback' => 'tajwar_sanitize_testimonial_rating',
+	) );
 }
 add_action( 'init', 'tajwar_register_post_types' );
+
+/**
+ * Clamp a testimonial's star rating to the 1-5 range, defaulting to 5
+ * for anything missing or out of range.
+ *
+ * @param mixed $raw Raw rating value.
+ * @return int
+ */
+function tajwar_sanitize_testimonial_rating( $raw ) {
+	$rating = absint( $raw );
+	return ( $rating >= 1 && $rating <= 5 ) ? $rating : 5;
+}
 
 /**
  * Split a newline-separated bullets textarea into a clean array.

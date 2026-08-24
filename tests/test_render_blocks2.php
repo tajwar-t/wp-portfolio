@@ -181,6 +181,50 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'hero-stats', $direct_call_output );
 	}
 
+	public function test_testimonial_slider_renders_published_testimonials() {
+		$post_id = self::factory()->post->create( array(
+			'post_type'    => 'testimonial',
+			'post_title'   => 'westermanjezz',
+			'post_content' => 'he is an expert in his work! Friendly, replies fast and can do anything you ask for.',
+			'post_status'  => 'publish',
+		) );
+		update_post_meta( $post_id, '_testimonial_country', 'Netherlands' );
+		update_post_meta( $post_id, '_testimonial_service', 'Shopify' );
+		update_post_meta( $post_id, '_testimonial_rating', 5 );
+
+		$draft_id = self::factory()->post->create( array(
+			'post_type'   => 'testimonial',
+			'post_title'  => 'Unpublished reviewer',
+			'post_status' => 'draft',
+		) );
+
+		$html = tajwar_render_testimonial_slider();
+
+		$this->assertStringContainsString( 'id="testimonialSlider"', $html );
+		$this->assertStringContainsString( 'id="testimonialTrack"', $html );
+		$this->assertStringContainsString( 'westermanjezz', $html );
+		$this->assertStringContainsString( 'Netherlands', $html );
+		$this->assertStringContainsString( 'Shopify', $html );
+		$this->assertStringContainsString( 'he is an expert in his work!', $html );
+		$this->assertStringContainsString( str_repeat( '★', 5 ), $html );
+		$this->assertStringNotContainsString( 'Unpublished reviewer', $html );
+	}
+
+	public function test_testimonial_slider_render_php_survives_being_required_again_without_fatal() {
+		$render_file = dirname( __DIR__ ) . '/blocks/testimonial-slider/render.php';
+
+		ob_start();
+		require $render_file;
+		ob_get_clean();
+
+		$blocks   = parse_blocks( '<!-- wp:tajwar/testimonial-slider /-->' );
+		$rendered = render_block( $blocks[0] );
+
+		$direct_call_output = tajwar_render_testimonial_slider();
+		$this->assertIsString( $rendered );
+		$this->assertIsString( $direct_call_output );
+	}
+
 	public function test_skill_group_and_skill_pill_blocks_are_registered() {
 		// tajwar_register_blocks() already ran once via the 'init' hook
 		// during bootstrap -- calling it again here would try to
@@ -189,6 +233,7 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 		$registry = WP_Block_Type_Registry::get_instance();
 		$this->assertTrue( $registry->is_registered( 'tajwar/skill-group' ) );
 		$this->assertTrue( $registry->is_registered( 'tajwar/skill-pill' ) );
+		$this->assertTrue( $registry->is_registered( 'tajwar/testimonial-slider' ) );
 
 		$pill = $registry->get_registered( 'tajwar/skill-pill' );
 		$this->assertSame( array( 'tajwar/skill-group' ), $pill->parent );
