@@ -115,4 +115,38 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 		// The static WordPress Plugins card ships in every render regardless of CPT content.
 		$this->assertStringContainsString( 'wp-sleek-admin', $html );
 	}
+
+	public function test_work_slider_renders_image_slide_and_fallback_slide() {
+		$normal_id = self::factory()->post->create( array(
+			'post_type'   => 'work_site',
+			'post_title'  => 'Danesh Exchange',
+			'post_status' => 'publish',
+		) );
+		update_post_meta( $normal_id, '_work_site_url', 'https://www.daneshexchange.com/' );
+		update_post_meta( $normal_id, '_work_site_platform', 'WordPress' );
+		$attachment_id = self::factory()->attachment->create_upload_object(
+			DIR_TESTDATA . '/images/canola.jpg',
+			$normal_id
+		);
+		set_post_thumbnail( $normal_id, $attachment_id );
+
+		$blocked_id = self::factory()->post->create( array(
+			'post_type'   => 'work_site',
+			'post_title'  => 'Keith James',
+			'post_status' => 'publish',
+		) );
+		update_post_meta( $blocked_id, '_work_site_url', 'https://keithjames.com/' );
+		update_post_meta( $blocked_id, '_work_site_platform', 'Shopify' );
+		update_post_meta( $blocked_id, '_work_site_preview_blocked', true );
+
+		$html = tajwar_render_work_slider();
+
+		$this->assertStringContainsString( 'id="workSlider"', $html );
+		$this->assertStringContainsString( 'id="sliderTrack"', $html );
+		$this->assertStringContainsString( 'Danesh Exchange', $html );
+		$this->assertStringContainsString( '<img', $html );
+		$this->assertStringContainsString( 'Keith James', $html );
+		$this->assertStringContainsString( 'slide-fallback', $html );
+		$this->assertStringContainsString( 'Live preview unavailable', $html );
+	}
 }
