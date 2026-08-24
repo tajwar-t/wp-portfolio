@@ -13,4 +13,10 @@ class Test_Post_Types extends WP_UnitTestCase {
 		$this->assertFalse( $pt->public ); // admin-managed only, no public single pages
 		$this->assertTrue( $pt->show_ui );
 	}
+
+	public function test_project_post_type_is_registered() {
+		tajwar_register_post_types();
+		$this->assertTrue( post_type_exists( 'project' ) );
+		$this->assertTrue( post_type_supports( 'project', 'editor' ) );
+	}
 }

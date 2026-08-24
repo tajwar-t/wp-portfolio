@@ -70,4 +70,68 @@ class Test_Meta_Boxes extends WP_UnitTestCase {
 
 		unset( $_POST['tajwar_experience_nonce'] );
 	}
+
+	private function make_project_post() {
+		tajwar_register_post_types();
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		return self::factory()->post->create( array( 'post_type' => 'project' ) );
+	}
+
+	/**
+	 * Real round-trip test: renders the actual meta box markup, extracts the
+	 * <input name="..."> attributes from it via DOM parsing, POSTs under those
+	 * exact field names, and asserts the save handler persisted the values.
+	 * This guards against the render/save field-name mismatch found in Task 7.
+	 */
+	public function test_save_project_meta_persists_all_fields_matching_rendered_field_names() {
+		$post_id = $this->make_project_post();
+		$post    = get_post( $post_id );
+
+		ob_start();
+		tajwar_render_project_meta_box( $post );
+		$html = ob_get_clean();
+
+		preg_match_all( '/<input[^>]*\bname="([^"]+)"/', $html, $matches );
+		$rendered_field_names = $matches[1];
+
+		$this->assertContains( 'tajwar_project_tags', $rendered_field_names );
+		$this->assertContains( 'tajwar_project_url', $rendered_field_names );
+
+		$_POST['tajwar_project_nonce'] = wp_create_nonce( 'tajwar_save_project' );
+		$_POST['tajwar_project_tags']  = 'Laravel, Shopify API, PHP';
+		$_POST['tajwar_project_url']   = 'https://example.com/project';
+
+		tajwar_save_project_meta( $post_id );
+
+		$this->assertSame( 'Laravel, Shopify API, PHP', get_post_meta( $post_id, '_project_tags', true ) );
+		$this->assertSame( 'https://example.com/project', get_post_meta( $post_id, '_project_url', true ) );
+
+		unset( $_POST['tajwar_project_nonce'], $_POST['tajwar_project_tags'], $_POST['tajwar_project_url'] );
+	}
+
+	public function test_save_project_meta_requires_valid_nonce() {
+		$post_id = $this->make_project_post();
+
+		$_POST['tajwar_project_nonce'] = 'invalid-nonce';
+		$_POST['tajwar_project_tags']  = 'Should Not Save';
+
+		tajwar_save_project_meta( $post_id );
+
+		$this->assertSame( '', get_post_meta( $post_id, '_project_tags', true ) );
+
+		unset( $_POST['tajwar_project_nonce'], $_POST['tajwar_project_tags'] );
+	}
+
+	public function test_save_project_meta_sanitizes_url() {
+		$post_id = $this->make_project_post();
+
+		$_POST['tajwar_project_nonce'] = wp_create_nonce( 'tajwar_save_project' );
+		$_POST['tajwar_project_url']   = 'javascript:alert(1)';
+
+		tajwar_save_project_meta( $post_id );
+
+		$this->assertSame( '', get_post_meta( $post_id, '_project_url', true ) );
+
+		unset( $_POST['tajwar_project_nonce'], $_POST['tajwar_project_url'] );
+	}
 }

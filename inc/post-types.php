@@ -58,6 +58,32 @@ function tajwar_register_post_types() {
 		'single'            => true,
 		'sanitize_callback' => 'sanitize_textarea_field',
 	) );
+
+	register_post_type( 'project', array(
+		'label'        => 'Projects',
+		'labels'       => array(
+			'name'          => 'Projects',
+			'singular_name' => 'Project',
+			'add_new_item'  => 'Add Project',
+		),
+		'public'       => false,
+		'show_ui'      => true,
+		'show_in_menu' => true,
+		'menu_icon'    => 'dashicons-hammer',
+		'supports'     => array( 'title', 'editor' ),
+		'show_in_rest' => false,
+	) );
+
+	register_post_meta( 'project', '_project_tags', array(
+		'type'              => 'string',
+		'single'            => true,
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	register_post_meta( 'project', '_project_url', array(
+		'type'              => 'string',
+		'single'            => true,
+		'sanitize_callback' => 'esc_url_raw',
+	) );
 }
 add_action( 'init', 'tajwar_register_post_types' );
 
