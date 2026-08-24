@@ -6,5 +6,6 @@
 	"category": "widgets",
 	"description": "Renders published Project entries plus the static WordPress Plugins card.",
 	"textdomain": "tajwar-portfolio",
-	"render": "file:./render.php"
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js"
 }

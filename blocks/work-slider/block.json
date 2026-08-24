@@ -6,5 +6,6 @@
 	"category": "widgets",
 	"description": "Renders published Work Site entries as the responsive 3/2/1-per-view carousel.",
 	"textdomain": "tajwar-portfolio",
-	"render": "file:./render.php"
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js"
 }

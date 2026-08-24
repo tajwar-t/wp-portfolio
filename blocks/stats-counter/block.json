@@ -7,5 +7,6 @@
 	"description": "Renders the hero stats row; each number counts up from 0 when it scrolls into view.",
 	"textdomain": "tajwar-portfolio",
 	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js"
 }
