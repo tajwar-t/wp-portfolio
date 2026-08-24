@@ -95,4 +95,24 @@ class Test_Render_Blocks extends WP_UnitTestCase {
 		$direct_call_output = tajwar_render_experience_timeline();
 		$this->assertStringContainsString( 'Reload Co', $direct_call_output );
 	}
+
+	public function test_projects_grid_renders_published_projects_with_tags_and_static_plugin_card() {
+		$project_id = self::factory()->post->create( array(
+			'post_type'    => 'project',
+			'post_title'   => 'Shopify Form App',
+			'post_content' => 'Collects customer data and subscribes them to email marketing.',
+			'post_status'  => 'publish',
+		) );
+		update_post_meta( $project_id, '_project_tags', 'Laravel, Shopify API, PHP' );
+
+		$html = tajwar_render_projects_grid();
+
+		$this->assertStringContainsString( '<div class="project-grid">', $html );
+		$this->assertStringContainsString( 'Shopify Form App', $html );
+		$this->assertStringContainsString( 'Collects customer data', $html );
+		$this->assertStringContainsString( '<li>Laravel</li>', $html );
+		$this->assertStringContainsString( '<li>Shopify API</li>', $html );
+		// The static WordPress Plugins card ships in every render regardless of CPT content.
+		$this->assertStringContainsString( 'wp-sleek-admin', $html );
+	}
 }

@@ -1,0 +1,10 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tajwar/projects-grid",
+	"title": "Projects Grid",
+	"category": "widgets",
+	"description": "Renders published Project entries plus the static WordPress Plugins card.",
+	"textdomain": "tajwar-portfolio",
+	"render": "file:./render.php"
+}

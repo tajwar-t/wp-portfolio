@@ -16,6 +16,7 @@ function _tajwar_manually_load_theme() {
 	// time. Tests call tajwar_render_experience_timeline() directly, so
 	// require it explicitly here.
 	require_once dirname( __DIR__ ) . '/blocks/experience-timeline/render.php';
+	require_once dirname( __DIR__ ) . '/blocks/projects-grid/render.php';
 }
 tests_add_filter( 'muplugins_loaded', '_tajwar_manually_load_theme' );
 
