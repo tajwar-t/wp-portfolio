@@ -1,7 +1,24 @@
 <?php
 /**
  * One-time content migration from the static tajwar-port site.
+ *
  * Run with: wp eval-file bin/import-content.php
+ *
+ * Screenshots: this script sideloads 8 screenshot JPGs as featured images for
+ * the Work Site posts. media_handle_sideload() COPIES the source file into
+ * uploads/ and then DELETES the original — never point TAJWAR_SCREENSHOTS_DIR
+ * at the original tajwar-port assets folder. Copy the screenshots to a
+ * disposable directory first, e.g.:
+ *
+ *   mkdir -p /tmp/tajwar-screenshots
+ *   cp /path/to/tajwar-port/assets/screenshots/*.jpg /tmp/tajwar-screenshots/
+ *   TAJWAR_SCREENSHOTS_DIR=/tmp/tajwar-screenshots wp eval-file bin/import-content.php
+ *
+ * Idempotency: this script is NOT safe to run twice — it always inserts new
+ * posts. It aborts up front if experience/project/work_site posts already
+ * exist, to avoid silently duplicating content (and re-triggering the
+ * sideload-deletion risk above). Set TAJWAR_FORCE_REIMPORT=1 to bypass that
+ * guard if you really mean to re-run it.
  */
 
 if ( ! defined( 'WP_CLI' ) ) {
@@ -11,6 +28,41 @@ if ( ! defined( 'WP_CLI' ) ) {
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
+
+/**
+ * Count existing (non-trashed) posts of a type, across all statuses.
+ *
+ * @param string $post_type Post type slug.
+ * @return int
+ */
+function tajwar_count_existing_posts( $post_type ) {
+	$counts = wp_count_posts( $post_type );
+	$total  = 0;
+	foreach ( $counts as $status => $count ) {
+		if ( 'trash' !== $status ) {
+			$total += (int) $count;
+		}
+	}
+	return $total;
+}
+
+$existing_counts = array(
+	'experience' => tajwar_count_existing_posts( 'experience' ),
+	'project'    => tajwar_count_existing_posts( 'project' ),
+	'work_site'  => tajwar_count_existing_posts( 'work_site' ),
+);
+$existing_total = array_sum( $existing_counts );
+
+if ( $existing_total > 0 && ! getenv( 'TAJWAR_FORCE_REIMPORT' ) ) {
+	WP_CLI::error(
+		sprintf(
+			"Found existing content (experience: %d, project: %d, work_site: %d) — this script is not idempotent and re-running it would create duplicates and re-trigger the screenshot-sideload deletion. Delete the existing posts first, or set TAJWAR_FORCE_REIMPORT=1 to run anyway.",
+			$existing_counts['experience'],
+			$existing_counts['project'],
+			$existing_counts['work_site']
+		)
+	);
+}
 
 $experience_entries = array(
 	array(
@@ -97,11 +149,12 @@ $work_sites = array(
 	array( 'title' => 'Amplified Boosts', 'url' => 'https://www.amplifiedboosts.com/', 'platform' => 'Shopify', 'image' => 'amplifiedboosts.jpg', 'blocked' => false ),
 );
 
-// Path to the static site's already-captured screenshots. These live in a
-// sibling project directory (tajwar-port), NOT inside this theme — the theme
-// itself only ships code, not this one-time migration data. Override with
-// TAJWAR_SCREENSHOTS_DIR if the screenshots live somewhere else on this machine.
-$screenshots_dir = getenv( 'TAJWAR_SCREENSHOTS_DIR' ) ?: 'E:\\laragon\\www\\tajwar-port\\assets\\screenshots';
+// Path to a DISPOSABLE copy of the static site's already-captured screenshots.
+// This must NOT be the original tajwar-port assets folder — see the warning
+// above media_handle_sideload() below for why. Defaults to a throwaway temp
+// directory; override with TAJWAR_SCREENSHOTS_DIR to point at wherever you
+// copied the screenshots on this machine.
+$screenshots_dir = getenv( 'TAJWAR_SCREENSHOTS_DIR' ) ?: sys_get_temp_dir() . '/tajwar-screenshots';
 
 foreach ( $work_sites as $i => $site ) {
 	$post_id = wp_insert_post( array(
@@ -121,6 +174,9 @@ foreach ( $work_sites as $i => $site ) {
 	if ( $site['image'] ) {
 		$file_path = trailingslashit( $screenshots_dir ) . $site['image'];
 		if ( file_exists( $file_path ) ) {
+			// media_handle_sideload() DELETES $file_path after copying it into
+			// uploads/ — never point TAJWAR_SCREENSHOTS_DIR at the original
+			// assets folder. Copy screenshots to a disposable directory first.
 			$attachment_id = media_handle_sideload( array(
 				'name'     => $site['image'],
 				'tmp_name' => $file_path,
