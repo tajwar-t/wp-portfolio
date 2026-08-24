@@ -84,6 +84,37 @@ function tajwar_register_post_types() {
 		'single'            => true,
 		'sanitize_callback' => 'esc_url_raw',
 	) );
+
+	register_post_type( 'work_site', array(
+		'label'        => 'Work Sites',
+		'labels'       => array(
+			'name'          => 'Work Sites',
+			'singular_name' => 'Work Site',
+			'add_new_item'  => 'Add Work Site',
+		),
+		'public'       => false,
+		'show_ui'      => true,
+		'show_in_menu' => true,
+		'menu_icon'    => 'dashicons-admin-site-alt3',
+		'supports'     => array( 'title', 'thumbnail' ),
+		'show_in_rest' => false,
+	) );
+
+	register_post_meta( 'work_site', '_work_site_url', array(
+		'type'              => 'string',
+		'single'            => true,
+		'sanitize_callback' => 'esc_url_raw',
+	) );
+	register_post_meta( 'work_site', '_work_site_platform', array(
+		'type'              => 'string',
+		'single'            => true,
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	register_post_meta( 'work_site', '_work_site_preview_blocked', array(
+		'type'              => 'boolean',
+		'single'            => true,
+		'sanitize_callback' => 'rest_sanitize_boolean',
+	) );
 }
 add_action( 'init', 'tajwar_register_post_types' );
 

@@ -19,4 +19,10 @@ class Test_Post_Types extends WP_UnitTestCase {
 		$this->assertTrue( post_type_exists( 'project' ) );
 		$this->assertTrue( post_type_supports( 'project', 'editor' ) );
 	}
+
+	public function test_work_site_post_type_supports_thumbnail() {
+		tajwar_register_post_types();
+		$this->assertTrue( post_type_exists( 'work_site' ) );
+		$this->assertTrue( post_type_supports( 'work_site', 'thumbnail' ) );
+	}
 }

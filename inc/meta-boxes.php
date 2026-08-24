@@ -136,3 +136,57 @@ function tajwar_save_project_meta( $post_id ) {
 	}
 }
 add_action( 'save_post_project', 'tajwar_save_project_meta' );
+
+function tajwar_add_work_site_meta_box() {
+	add_meta_box( 'tajwar_work_site_details', 'Work Site Details', 'tajwar_render_work_site_meta_box', 'work_site', 'side', 'default' );
+}
+add_action( 'add_meta_boxes', 'tajwar_add_work_site_meta_box' );
+
+function tajwar_render_work_site_meta_box( $post ) {
+	wp_nonce_field( 'tajwar_save_work_site', 'tajwar_work_site_nonce' );
+	$url             = get_post_meta( $post->ID, '_work_site_url', true );
+	$platform        = get_post_meta( $post->ID, '_work_site_platform', true );
+	$preview_blocked = (bool) get_post_meta( $post->ID, '_work_site_preview_blocked', true );
+	$platforms       = array( 'WordPress', 'Shopify', 'Magento 2' );
+	?>
+	<p>
+		<label for="tajwar_work_site_url"><strong>Live URL</strong></label><br>
+		<input type="url" id="tajwar_work_site_url" name="tajwar_work_site_url" class="widefat" value="<?php echo esc_attr( $url ); ?>" required>
+	</p>
+	<p>
+		<label for="tajwar_work_site_platform"><strong>Platform</strong></label><br>
+		<select id="tajwar_work_site_platform" name="tajwar_work_site_platform" class="widefat">
+			<?php foreach ( $platforms as $option ) : ?>
+				<option value="<?php echo esc_attr( $option ); ?>" <?php selected( $platform, $option ); ?>><?php echo esc_html( $option ); ?></option>
+			<?php endforeach; ?>
+		</select>
+	</p>
+	<p>
+		<label><input type="checkbox" name="tajwar_work_site_preview_blocked" value="1" <?php checked( $preview_blocked ); ?>> This site blocks automated screenshots (show the fallback tile instead of the featured image)</label>
+	</p>
+	<p>Set the screenshot as this post's <strong>Featured Image</strong> in the panel on the right.</p>
+	<?php
+}
+
+function tajwar_save_work_site_meta( $post_id ) {
+	if ( ! isset( $_POST['tajwar_work_site_nonce'] ) || ! wp_verify_nonce( $_POST['tajwar_work_site_nonce'], 'tajwar_save_work_site' ) ) {
+		return;
+	}
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+
+	// Field names below are 'tajwar' . $meta_key, matching the <input name="..."> attributes
+	// rendered in tajwar_render_work_site_meta_box() above (tajwar_work_site_url, tajwar_work_site_platform).
+	if ( isset( $_POST['tajwar_work_site_url'] ) ) {
+		update_post_meta( $post_id, '_work_site_url', esc_url_raw( wp_unslash( $_POST['tajwar_work_site_url'] ) ) );
+	}
+	if ( isset( $_POST['tajwar_work_site_platform'] ) ) {
+		update_post_meta( $post_id, '_work_site_platform', sanitize_text_field( wp_unslash( $_POST['tajwar_work_site_platform'] ) ) );
+	}
+	update_post_meta( $post_id, '_work_site_preview_blocked', isset( $_POST['tajwar_work_site_preview_blocked'] ) );
+}
+add_action( 'save_post_work_site', 'tajwar_save_work_site_meta' );
