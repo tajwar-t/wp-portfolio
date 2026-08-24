@@ -1,5 +1,5 @@
 <?php
-class Test_Meta_Boxes extends WP_UnitTestCase {
+class Test_Meta_Boxes2 extends WP_UnitTestCase {
 
 	private function make_experience_post() {
 		tajwar_register_post_types();

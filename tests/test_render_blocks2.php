@@ -1,5 +1,5 @@
 <?php
-class Test_Render_Blocks extends WP_UnitTestCase {
+class Test_Render_Blocks2 extends WP_UnitTestCase {
 
 	public function test_experience_timeline_renders_published_entries_in_menu_order() {
 		$older = self::factory()->post->create( array(

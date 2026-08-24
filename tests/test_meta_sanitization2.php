@@ -1,5 +1,5 @@
 <?php
-class Test_Meta_Sanitization extends WP_UnitTestCase {
+class Test_Meta_Sanitization2 extends WP_UnitTestCase {
 
 	public function test_sanitize_experience_bullets_splits_and_trims_lines() {
 		$raw = "  Shipped 50+ sites.  \n\nCut load times by 30%.\n<script>alert(1)</script>Reviewed code.\n";
