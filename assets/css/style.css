@@ -140,12 +140,14 @@ button:focus-visible,
     color 0.2s ease,
     padding-left 0.2s ease;
 }
-.sidebar-nav a .prompt {
+.sidebar-nav a::before {
+  content: "➜";
   color: var(--accent);
   display: inline-block;
   width: 0;
   margin-right: 0;
   opacity: 0;
+  overflow: hidden;
   transform: translateX(-6px);
   transition:
     width 0.2s ease,
@@ -158,9 +160,9 @@ button:focus-visible,
 .sidebar-nav a.active {
   color: var(--ink);
 }
-.sidebar-nav a:hover .prompt,
-.sidebar-nav a:focus-visible .prompt,
-.sidebar-nav a.active .prompt {
+.sidebar-nav a:hover::before,
+.sidebar-nav a:focus-visible::before,
+.sidebar-nav a.active::before {
   width: 1em;
   margin-right: 8px;
   opacity: 1;
@@ -184,6 +186,17 @@ button:focus-visible,
 .social-list a:hover {
   color: var(--accent);
   transform: translateY(-2px);
+}
+/* core/social-links (is-style-logos-only) forces each anchor to
+   `color: currentColor` at 0,4,0 specificity, inherited from a
+   per-service brand-color rule on the <li> (e.g. LinkedIn blue) that
+   only has :where() (0 specificity) protection -- override the <li>
+   color instead of fighting the anchor rule directly. */
+.social-list.wp-block-social-links .wp-social-link {
+  color: var(--ink-dim);
+}
+.social-list.wp-block-social-links .wp-social-link:hover {
+  color: var(--accent);
 }
 
 /* ---------- Mobile nav toggle ---------- */

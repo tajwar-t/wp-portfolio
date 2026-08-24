@@ -27,14 +27,21 @@
   });
 
   /* ---- Scroll-spy active nav highlighting ---- */
-  var navLinks = document.querySelectorAll(".sidebar-nav a[data-nav]");
-  var sections = Array.prototype.map.call(navLinks, function (link) {
-    return document.getElementById(link.dataset.nav);
+  function navTarget(link) {
+    return link.hash ? link.hash.slice(1) : null;
+  }
+
+  var navLinks = Array.prototype.filter.call(
+    document.querySelectorAll(".sidebar-nav a"),
+    function (link) { return !!navTarget(link); }
+  );
+  var sections = navLinks.map(function (link) {
+    return document.getElementById(navTarget(link));
   }).filter(Boolean);
 
   function setActive(id) {
     navLinks.forEach(function (link) {
-      link.classList.toggle("active", link.dataset.nav === id);
+      link.classList.toggle("active", navTarget(link) === id);
     });
   }
 
