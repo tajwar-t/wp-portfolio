@@ -20,17 +20,38 @@ function tajwar_setup() {
 add_action( 'after_setup_theme', 'tajwar_setup' );
 
 function tajwar_enqueue_assets() {
+	// Swiper is vendored locally under assets/lib/swiper (no CDN) --
+	// see assets/lib/swiper/LICENSE. Pin its exact bundled version here
+	// since the files carry no query-string versioning of their own.
+	wp_enqueue_style(
+		'swiper',
+		TAJWAR_THEME_URI . '/assets/lib/swiper/swiper-bundle.min.css',
+		array(),
+		'14.2.0'
+	);
+	wp_enqueue_script(
+		'swiper',
+		TAJWAR_THEME_URI . '/assets/lib/swiper/swiper-bundle.min.js',
+		array(),
+		'14.2.0',
+		true
+	);
+
+	// filemtime()-based versioning so the enqueue query string changes on
+	// every edit -- TAJWAR_THEME_VERSION is a fixed '1.0.0' and never busts
+	// the browser cache on its own, which has repeatedly served stale CSS/JS
+	// during development.
 	wp_enqueue_style(
 		'tajwar-style',
 		TAJWAR_THEME_URI . '/assets/css/style.css',
-		array(),
-		TAJWAR_THEME_VERSION
+		array( 'swiper' ),
+		filemtime( TAJWAR_THEME_DIR . '/assets/css/style.css' )
 	);
 	wp_enqueue_script(
 		'tajwar-main',
 		TAJWAR_THEME_URI . '/assets/js/main.js',
-		array(),
-		TAJWAR_THEME_VERSION,
+		array( 'swiper' ),
+		filemtime( TAJWAR_THEME_DIR . '/assets/js/main.js' ),
 		true
 	);
 }

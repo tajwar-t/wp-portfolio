@@ -142,7 +142,7 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 		$html = tajwar_render_work_slider();
 
 		$this->assertStringContainsString( 'id="workSlider"', $html );
-		$this->assertStringContainsString( 'id="sliderTrack"', $html );
+		$this->assertStringContainsString( 'class="swiper-wrapper"', $html );
 		$this->assertStringContainsString( 'Danesh Exchange', $html );
 		$this->assertStringContainsString( '<img', $html );
 		$this->assertStringContainsString( 'Keith James', $html );
@@ -155,7 +155,9 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 
 		$html = tajwar_render_work_slider();
 
-		$this->assertStringContainsString( '--slider-desktop: 3; --slider-tablet: 2; --slider-mobile: 1;', $html );
+		$this->assertStringContainsString( 'data-per-view-desktop="3"', $html );
+		$this->assertStringContainsString( 'data-per-view-tablet="2"', $html );
+		$this->assertStringContainsString( 'data-per-view-mobile="1"', $html );
 	}
 
 	public function test_work_slider_applies_custom_per_view_attributes() {
@@ -167,7 +169,9 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 			'perViewMobile'  => 2,
 		) );
 
-		$this->assertStringContainsString( '--slider-desktop: 5; --slider-tablet: 3; --slider-mobile: 2;', $html );
+		$this->assertStringContainsString( 'data-per-view-desktop="5"', $html );
+		$this->assertStringContainsString( 'data-per-view-tablet="3"', $html );
+		$this->assertStringContainsString( 'data-per-view-mobile="2"', $html );
 	}
 
 	public function test_work_slider_clamps_per_view_attributes_below_one() {
@@ -179,7 +183,9 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 			'perViewMobile'  => 1,
 		) );
 
-		$this->assertStringContainsString( '--slider-desktop: 1; --slider-tablet: 1; --slider-mobile: 1;', $html );
+		$this->assertStringContainsString( 'data-per-view-desktop="1"', $html );
+		$this->assertStringContainsString( 'data-per-view-tablet="1"', $html );
+		$this->assertStringContainsString( 'data-per-view-mobile="1"', $html );
 	}
 
 	public function test_stats_counter_renders_all_four_stats_starting_at_zero() {
@@ -233,7 +239,7 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 		$html = tajwar_render_testimonial_slider();
 
 		$this->assertStringContainsString( 'id="testimonialSlider"', $html );
-		$this->assertStringContainsString( 'id="testimonialTrack"', $html );
+		$this->assertStringContainsString( 'class="swiper-wrapper"', $html );
 		$this->assertStringContainsString( 'westermanjezz', $html );
 		$this->assertStringContainsString( 'Netherlands', $html );
 		$this->assertStringContainsString( 'Shopify', $html );
@@ -247,7 +253,9 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 
 		$html = tajwar_render_testimonial_slider();
 
-		$this->assertStringContainsString( '--slider-desktop: 4; --slider-tablet: 3; --slider-mobile: 2;', $html );
+		$this->assertStringContainsString( 'data-per-view-desktop="4"', $html );
+		$this->assertStringContainsString( 'data-per-view-tablet="3"', $html );
+		$this->assertStringContainsString( 'data-per-view-mobile="2"', $html );
 	}
 
 	public function test_testimonial_slider_applies_custom_per_view_attributes() {
@@ -259,7 +267,9 @@ class Test_Render_Blocks2 extends WP_UnitTestCase {
 			'perViewMobile'  => 1,
 		) );
 
-		$this->assertStringContainsString( '--slider-desktop: 6; --slider-tablet: 4; --slider-mobile: 1;', $html );
+		$this->assertStringContainsString( 'data-per-view-desktop="6"', $html );
+		$this->assertStringContainsString( 'data-per-view-tablet="4"', $html );
+		$this->assertStringContainsString( 'data-per-view-mobile="1"', $html );
 	}
 
 	public function test_testimonial_slider_render_php_survives_being_required_again_without_fatal() {

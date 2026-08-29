@@ -631,40 +631,73 @@ main {
   margin-bottom: 36px;
 }
 
-.slider {
+/* Sliders (Work + Testimonials), powered by Swiper (assets/vendor/swiper).
+   Swiper handles slide sizing/paging itself -- slidesPerView and the
+   responsive breakpoints are configured in assets/js/main.js from each
+   .swiper element's data-per-view-* attributes, not CSS. This block only
+   themes Swiper's own parts (nav arrows, pagination dots) to match the
+   site, plus the slide content classes below (.slide-bar, .slide-frame,
+   .testimonial-card, ...) which are unchanged from before Swiper. */
+.swiper {
+  --swiper-navigation-size: 16px;
+  --swiper-navigation-color: var(--ink);
+  --swiper-pagination-color: var(--accent);
+  --swiper-pagination-bullet-inactive-color: var(--line);
+  --swiper-pagination-bullet-inactive-opacity: 1;
   position: relative;
   max-width: 100%;
-  /* --slider-desktop/-tablet/-mobile are set inline by render.php from the
-     block's perViewDesktop/perViewTablet/perViewMobile attributes; the
-     var() fallbacks are this slider's defaults when unset. */
-  --per-view: var(--slider-desktop, 3);
 }
-@media (max-width: 900px) {
-  .slider {
-    --per-view: var(--slider-tablet, 2);
-  }
+.swiper-slide {
+  height: auto;
 }
+.swiper-button-prev,
+.swiper-button-next {
+  top: calc(50% + 14px);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
+}
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  border-color: var(--accent);
+  --swiper-navigation-color: var(--accent);
+}
+.swiper-button-prev {
+  left: -20px;
+}
+.swiper-button-next {
+  right: -20px;
+}
+.swiper-button-disabled {
+  opacity: 0.35;
+}
+
+.swiper-pagination {
+  position: static;
+  margin-top: 20px;
+}
+.swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+.swiper-pagination-bullet-active {
+  transform: scale(1.3);
+}
+
 @media (max-width: 640px) {
-  .slider {
-    --per-view: var(--slider-mobile, 1);
+  .swiper-button-prev,
+  .swiper-button-next {
+    display: none;
   }
-}
-.slider-viewport {
-  overflow: hidden;
-}
-.slider-track {
-  display: flex;
-  gap: 20px;
-  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .slider-track {
-    transition: none;
-  }
-}
-.slide {
-  flex: 0 0 calc((100% - (var(--per-view) - 1) * 20px) / var(--per-view));
-  min-width: 0;
 }
 
 .slide-bar {
@@ -721,7 +754,7 @@ main {
   display: block;
   transition: transform 0.4s ease;
 }
-.slide:hover .slide-frame img {
+.swiper-slide:hover .slide-frame img {
   transform: scale(1.02);
 }
 
@@ -760,86 +793,13 @@ main {
   z-index: 2;
 }
 
-.slider-arrow {
-  position: absolute;
-  top: calc(50% + 14px);
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--bg-elevated);
-  color: var(--ink);
-  font-size: 1.3rem;
-  line-height: 1;
-  cursor: pointer;
-  z-index: 3;
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease,
-    background 0.2s ease;
-}
-.slider-arrow:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.slider-prev {
-  left: -20px;
-}
-.slider-next {
-  right: -20px;
-}
-
-.slider-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 20px;
-}
-.slider-dots button {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: none;
-  background: var(--line);
-  cursor: pointer;
-  padding: 0;
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-.slider-dots button.active {
-  background: var(--accent);
-  transform: scale(1.3);
-}
-
 @media (max-width: 640px) {
-  .slider-arrow {
-    display: none;
-  }
   .slide-bar {
     flex-wrap: wrap;
     row-gap: 6px;
   }
   .slide-visit {
     margin-left: 0;
-  }
-}
-
-/* Testimonials slider -- reuses .slider/.slider-track/.slide chrome from
-   the Work slider above, with its own --per-view breakpoints: 4 desktop,
-   3 tablet, 2 mobile. */
-.slider-testimonials {
-  --per-view: var(--slider-desktop, 4);
-}
-@media (max-width: 1100px) {
-  .slider-testimonials {
-    --per-view: var(--slider-tablet, 3);
-  }
-}
-@media (max-width: 640px) {
-  .slider-testimonials {
-    --per-view: var(--slider-mobile, 2);
   }
 }
 

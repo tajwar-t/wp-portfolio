@@ -100,85 +100,42 @@
     setTimeout(tick, 2200);
   }
 
-  /* ---- Sliders (Work + Testimonials) ----
-     Generic init over every .slider on the page (scoped by class, not id,
+  /* ---- Sliders (Work + Testimonials), powered by Swiper ----
+     Generic init over every .swiper on the page (scoped by class, not id,
      so multiple independent carousels can coexist). Each instance reads
-     its own --per-view custom property, so different sliders can define
-     different responsive breakpoints (see .slider-testimonials in
-     style.css) while sharing this same behaviour. */
-  Array.prototype.forEach.call(document.querySelectorAll(".slider"), function (slider) {
-    var track = slider.querySelector(".slider-track");
-    if (!track) return;
-    var slides = Array.prototype.slice.call(track.children);
-    var prevBtn = slider.querySelector(".slider-prev");
-    var nextBtn = slider.querySelector(".slider-next");
-    var dotsWrap = slider.querySelector(".slider-dots");
-    var current = 0;
-    var perView = 1;
-    var pageCount = 1;
+     its own data-per-view-* attributes -- set by the block's Inspector
+     Controls, see blocks/work-slider/render.php and
+     blocks/testimonial-slider/render.php -- to configure Swiper's
+     responsive `breakpoints` option. The .testimonial-slider marker class
+     switches to a wider tablet breakpoint (>1100px vs >900px for Work)
+     before stepping up to the desktop count, matching the pre-Swiper
+     breakpoints in style.css. */
+  if (window.Swiper) {
+    Array.prototype.forEach.call(document.querySelectorAll(".swiper"), function (el) {
+      var desktop = parseInt(el.dataset.perViewDesktop, 10) || 1;
+      var tablet = parseInt(el.dataset.perViewTablet, 10) || 1;
+      var mobile = parseInt(el.dataset.perViewMobile, 10) || 1;
+      var desktopBreakpoint = el.classList.contains("testimonial-slider") ? 1101 : 901;
+      var breakpoints = {};
+      breakpoints[641] = { slidesPerView: tablet };
+      breakpoints[desktopBreakpoint] = { slidesPerView: desktop };
 
-    function getPerView() {
-      var raw = getComputedStyle(slider).getPropertyValue("--per-view");
-      var n = parseInt(raw, 10);
-      return n > 0 ? n : 1;
-    }
-
-    function buildDots() {
-      dotsWrap.innerHTML = "";
-      for (var i = 0; i < pageCount; i++) {
-        (function (i) {
-          var dot = document.createElement("button");
-          dot.type = "button";
-          dot.setAttribute("aria-label", "Go to slide group " + (i + 1));
-          dot.addEventListener("click", function () { goTo(i); });
-          dotsWrap.appendChild(dot);
-        })(i);
-      }
-    }
-
-    function render() {
-      var maxStart = Math.max(0, slides.length - perView);
-      var startIndex = Math.min(current * perView, maxStart);
-      track.style.transform = "translateX(-" + startIndex * (100 / perView) + "%)";
-      Array.prototype.forEach.call(dotsWrap.children, function (dot, i) {
-        dot.classList.toggle("active", i === current);
+      new window.Swiper(el, {
+        slidesPerView: mobile,
+        spaceBetween: 20,
+        speed: prefersReducedMotion ? 0 : 450,
+        keyboard: { enabled: true },
+        a11y: { enabled: true },
+        breakpoints: breakpoints,
+        navigation: {
+          nextEl: el.querySelector(".swiper-button-next"),
+          prevEl: el.querySelector(".swiper-button-prev"),
+        },
+        pagination: {
+          el: el.querySelector(".swiper-pagination"),
+          clickable: true,
+        },
       });
-    }
-
-    function goTo(i) {
-      current = (i + pageCount) % pageCount;
-      render();
-    }
-
-    function refreshLayout() {
-      var newPerView = getPerView();
-      if (newPerView === perView && dotsWrap.children.length) return;
-      perView = newPerView;
-      pageCount = Math.max(1, Math.ceil(slides.length / perView));
-      current = Math.min(current, pageCount - 1);
-      buildDots();
-      render();
-    }
-
-    if (prevBtn) prevBtn.addEventListener("click", function () { goTo(current - 1); });
-    if (nextBtn) nextBtn.addEventListener("click", function () { goTo(current + 1); });
-
-    slider.setAttribute("tabindex", "0");
-    slider.addEventListener("keydown", function (e) {
-      if (e.key === "ArrowLeft") goTo(current - 1);
-      if (e.key === "ArrowRight") goTo(current + 1);
     });
-
-    var touchStartX = null;
-    track.addEventListener("touchstart", function (e) { touchStartX = e.touches[0].clientX; }, { passive: true });
-    track.addEventListener("touchend", function (e) {
-      if (touchStartX === null) return;
-      var delta = e.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(delta) > 40) goTo(current + (delta < 0 ? 1 : -1));
-      touchStartX = null;
-    });
-
-    window.addEventListener("resize", refreshLayout);
-    refreshLayout();
-  });
+  }
 })();
