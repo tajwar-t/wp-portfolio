@@ -631,7 +631,7 @@ main {
   margin-bottom: 36px;
 }
 
-/* Sliders (Work + Testimonials), powered by Swiper (assets/vendor/swiper).
+/* Sliders (Work + Testimonials), powered by Swiper (assets/lib/swiper).
    Swiper handles slide sizing/paging itself -- slidesPerView and the
    responsive breakpoints are configured in assets/js/main.js from each
    .swiper element's data-per-view-* attributes, not CSS. This block only
@@ -639,7 +639,6 @@ main {
    site, plus the slide content classes below (.slide-bar, .slide-frame,
    .testimonial-card, ...) which are unchanged from before Swiper. */
 .swiper {
-  --swiper-navigation-size: 16px;
   --swiper-navigation-color: var(--ink);
   --swiper-pagination-color: var(--accent);
   --swiper-pagination-bullet-inactive-color: var(--line);
@@ -652,9 +651,10 @@ main {
 }
 .swiper-button-prev,
 .swiper-button-next {
-  top: calc(50% + 14px);
-  width: 40px;
-  height: 40px;
+  top: 50%;
+  margin-top: -18px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid var(--line);
   background: var(--bg-elevated);
@@ -662,6 +662,11 @@ main {
     border-color 0.2s ease,
     color 0.2s ease,
     background 0.2s ease;
+}
+.swiper-button-prev svg,
+.swiper-button-next svg {
+  width: 13px;
+  height: 13px;
 }
 .swiper-button-prev:hover,
 .swiper-button-next:hover {
